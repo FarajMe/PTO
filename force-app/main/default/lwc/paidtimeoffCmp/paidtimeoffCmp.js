@@ -38,7 +38,7 @@ import LBL_Delete_Holiday from "@salesforce/label/c.LBL_Delete_Holiday";
 import LBL_Add_Holiday_Text from "@salesforce/label/c.LBL_Add_Holiday_Text";
 import LBL_Sun_Holiday from "@salesforce/label/c.LBL_Sun_Holiday";
 import LBL_Mon_Holiday from "@salesforce/label/c.LBL_Mon_Holiday";
-import LBL_Tue_Holiday from "@salesforce/label/c.LBL_Tue_Holiday";
+import LBL_Tu_Holiday from "@salesforce/label/c.LBL_Tu_Holiday";
 import LBL_Wed_Holiday from "@salesforce/label/c.LBL_Wed_Holiday";
 import LBL_Thu_Holiday from "@salesforce/label/c.LBL_Thu_Holiday";
 import LBL_Fri_Holiday from "@salesforce/label/c.LBL_Fri_Holiday";
@@ -86,7 +86,7 @@ export default class PaidTimeOffCmp extends LightningElement {
     LBL_Add_Holiday_Text,
     LBL_Sun_Holiday,
     LBL_Mon_Holiday,
-    LBL_Tue_Holiday,
+    LBL_Tu_Holiday,
     LBL_Wed_Holiday,
     LBL_Thu_Holiday,
     LBL_Fri_Holiday,
