@@ -697,10 +697,26 @@ removeHoliday(event) {
         getSpecificHolidays({ holidayDate: selectedDate })
             .then(result => {
                 let holidays = JSON.parse(result);
-
                 // find the index of the holiday where Off_Day__c matches the selected date
                 let i = holidays.findIndex(holiday => holiday.Off_Day__c === selectedDate);
 
+                if(i == 0){
+                    DeleteHolidays({ 'holidayIds': holidayIds })
+                     .then(() => {
+                        this.openEditModal = false;
+                        if(this.upHolidays==true){
+                            this.handleUpcommingHolidays();
+                            this.startDate=undefined
+                        }else{
+                            this.handleChangeMonth();
+                            }
+                        this.loadDataFromDB();
+                        })
+                        .catch(error => {
+                          console.log('delete error ',error)
+                          this.openSpinner = false;
+                        });
+                }else{
                 if (i !== -1) {
                     DeleteHolidays({ 'holidayIds': [holidays[i].Id] })
                         .then(() => {
@@ -715,7 +731,8 @@ removeHoliday(event) {
                 } else {
                     console.log('No holiday found with the selected date.');
                     this.openSpinner = false;
-                }
+                }}
+                
             })
             .catch(error => {
                 console.error('Error fetching holidays: ', error);
@@ -723,6 +740,8 @@ removeHoliday(event) {
             });
     }
 }
+
+
 
 
 
