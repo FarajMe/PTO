@@ -1,0 +1,81 @@
+.w14{
+    width:14%;
+  }
+  
+  *:focus {
+    outline: none;
+  }
+  
+  .no-scrollbars{
+    scrollbar-width: none;
+  }
+  .no-scrollbars::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /*calendar css*/
+  .calendar-body .calendar-weekdays div {
+    cursor: default;
+    color:#9CA2AB
+  }
+  .calendar-dates{
+    text-align: center;
+    font-size: 1.07rem;
+    color: #414141;
+  }
+  
+  .calendar-body .calendar-dates div {
+    cursor: pointer;
+  }
+  
+  .calendar-dates div.inactive {
+    color: rgb(156,162,171,.6);
+  }
+  .calendar-dates div.inactiveCurrent {
+    color: rgb(156,162,171,.6);
+  }
+  .calendar-dates .holiday{
+    background: #0176D3
+  }
+  .calendar-dates .parent-circle{
+    width:41px;
+    height:41px;
+    border-radius:50px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border:1px solid transparent;
+    color: #414141;
+  }
+  .calendar-dates .active{
+    border:1px solid #0176D3;
+    color:#0176D3;
+    font-weight: bold;
+  }
+  .calendar-dates .active-day{
+    background:rgb(217,235,248,.7);
+    border:1px solid #0176D3
+  }
+  .inactive .holiday{
+    opacity: .4;
+  
+  }
+  
+  
+  @container (max-width: 600px) {
+    .h{
+      display:block !important
+    }
+    .w45{
+      width:100% !important
+    }
+    .w55{
+      display:none !important
+    }
+    .open-modal.w50{
+      width:90% !important
+    }
+  
+  }
+  
+  /*calendar css*/

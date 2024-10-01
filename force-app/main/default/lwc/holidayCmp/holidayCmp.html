@@ -1,0 +1,265 @@
+<template>
+    <div style="container-type: inline-size;">
+        <div class="ov "  if:true={openSpinner}>
+            <lightning-spinner alternative-text="Loading" size="small" ></lightning-spinner>
+        </div>
+        <div class="round2x " style="overflow:hidden;background:white">
+            <div class="fs0 pv8 ph20" style="border-bottom: 1px solid rgba(217, 217, 217, 0.4);box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;">
+                <div class="g_nm  fs14 w50 b l fs18 vm " >
+                    {labels.LBL_Holidays}
+                </div>
+                <div class="g_nm  fs14 w50 r vm">
+                    <div class="g_nm vm pointer" style="color:#0176D3;" onclick={handleUpcommingHolidays}>
+                        <div if:false={showUpcommingHolidays}>
+                            <lightning-icon icon-name='utility:list' alternative-text={labels.LBL_Upcomming_Holidays} size='x-small' title='Upcomming Holidays' class="slds-current-color " style="top:-1.5px"></lightning-icon>
+                            <lightning-helptext content="Upcomming Holidays"></lightning-helptext>
+                        </div>
+                    </div>
+                    <div class="g_nm vm pl5">
+                        <div if:false={isAdmin} class="pointer g_nm pr vm" style="width:30px;height:30px;background:#0176D3;border-radius:50%;color:white;padding-right:10px" onclick={handleOpenModalAddHoliday}>
+                            <div style="position: absolute;top: 45%;left: 50%;translate: -50% -50% 0px;">
+                                <lightning-icon icon-name='utility:add' alternative-text='add' size='x-small' title='Add Holiday' class="slds-current-color "></lightning-icon>
+                            </div>
+                            <div class="ov" style="background:transparent;border-radius:50%;" onclick={handleOpenModalAddHoliday}></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <tbl >
+                <cl class="w45 vt ">
+                    <div class="slds-grid slds-grid_vertical-align-center bgw pt15  ph10" >
+                        <div class="slds-col slds-size_2-of-12" >
+                            <div class="g_nm vm slds-m-right_xx-small pr pointer "  style="width:25px;height:25px;border-radius:5px;" >
+                                <div style="position: absolute;top: 45%;left: 50%;translate: -50% -50% 0px;color:#0176D3">
+                                    <lightning-icon icon-name='utility:chevronleft' alternative-text='chevronleft' size='xx-small' title='chevronleft' class="slds-current-color " ></lightning-icon>
+                                </div>
+                                <div class="ov" style="background:transparent" data-id="calendar-prev"  onclick={handleChangeMonth}></div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_8-of-12 slds-text-align_center" >
+                            <div class="fs18  b">
+                                <lightning-formatted-date-time value={currentDate} year="numeric" month="long"  ></lightning-formatted-date-time>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_2-of-12 slds-text-align_right" >
+                            <div class="g_nm vm pr pointer "  style="width:25px;height:25px;border-radius:5px;color:#0176D3" >
+                                <div style="position: absolute;top: 45%;left: 50%;translate: -50% -50% 0px;">
+                                    <lightning-icon icon-name='utility:chevronright' alternative-text='chevronright' size='xx-small' title='chevronright' class="slds-current-color " ></lightning-icon>
+                                </div>
+                                <div class="ov" style="background:transparent" data-id="calendar-next"  onclick={handleChangeMonth}></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="calendar-body pr bgw pt25 pb5" style="box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px;border-bottom:1px solid #D9D9D9;"> 
+                        <div class="calendar-weekdays fs0" style="font-weight: 400;text-align:center;margin-bottom:3px">
+                            <div class="w14 g_nm fs14">{labels.LBL_Sun_Holiday}</div>
+                            <div class="w14 g_nm fs14">{labels.LBL_Mon_Holiday}</div>
+                            <div class="w14 g_nm fs14">{labels.LBL_Tue_Holiday}</div>
+                            <div class="w14 g_nm fs14">{labels.LBL_Wed_Holiday}</div>
+                            <div class="w14 g_nm fs14">{labels.LBL_Thu_Holiday}</div>
+                            <div class="w14 g_nm fs14">{labels.LBL_Fri_Holiday}</div>
+                            <div class="w14 g_nm fs14">{labels.LBL_Sat_Holiday}</div>
+                        </div>
+                        <div class=" calendar-dates fs0" >
+                            <div for:each={calenderDates} for:item="calender" for:index="index" key={calender}   class="pr g_nm w14 pt25 pb25" style="text-align:center;">
+                                <div class={calender.parentClasses}  >
+                                    <div class="cc fs14" ><lightning-formatted-number value={calender.nb}></lightning-formatted-number></div>
+                                    <div for:each={calender.holidays} for:item="holiday" key={holiday} class={holiday.class} style={holiday.style} ></div>
+                                </div>
+                                <div class="ov" style="background:transparent" onclick={handleChangeDay} data-full={calender.full} data-nb={calender.nb} data-weekend={calender.weekend} data-open={calender.openDates} data-holiday={calender.holiday}></div>
+                            </div>
+                        </div>
+                    </div>
+                </cl>
+                <cl class="w55 vt" > 
+                    <div class="ov " style="background:#EFF3F5;">
+                        <div if:true={showAllHolidays}  class="bgw  holidays-list  " style="border-top-left-radius:0.25rem;border-top-right-radius:0.25rem ;overflow-y: scroll;height:100%;background:#EFF3F5;">
+                            <div class="fs12 b ph20 pv10" style="color:black;position: sticky;top:0;z-index:80;background:#EFF3F5">
+                                <lightning-formatted-date-time value={holidayText} if:false={upHolidays} ></lightning-formatted-date-time>
+                                <div if:true={upHolidays}>{holidayText}</div>
+                            </div>
+                            <div class="ph20 pb10" style="padding-bottom:7px">
+                                <div if:false={noHolidays}   for:each={holidaysCards} for:item="eachHolidayCard" data-key={eachHolidayCard.ids} key={eachHolidayCard.ids} style="background:white;margin-bottom:5px;box-shadow: rgba(0, 0, 0, 0.09) 0px 3px 12px;border-radius:0.25rem">
+                                    <div style="padding:7px">
+                                        <div  class="slds-grid slds-grid_vertical-align-center slds-wrap  " >
+                                            <div class="slds-col slds-size_10-of-12 slds-text-align_left " >
+                                                <div class="g_nm vt" >
+                                                    <div  style="width:7px;height:7px;border-radius:50px;background:#0176D3;margin-top:7px"></div>
+                                                </div>
+                                                <div class="g_nm vt " style="padding-left:5px">
+                                                    <div style="font-weight: 550;font-size:13px">
+                                                    {eachHolidayCard.title}
+                                                    </div>
+                                                    <div  style="margin-top:3px;font-size:11px">
+                                                        <div class="g_nm vm"><lightning-formatted-date-time value={eachHolidayCard.start}></lightning-formatted-date-time></div>
+                                                        <div class="g_nm vm" style="height:1px;background:rgb(1,118,211);width:5px;margin-left:5px;margin-right:5px"></div>
+                                                        <div class="g_nm vm"><lightning-formatted-date-time value={eachHolidayCard.end}></lightning-formatted-date-time></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="slds-col slds-size_2-of-12  slds-text-align_right" style="color:rgb(1,118,211);">
+                                                <div if:false={isAdmin}>
+                                                    <div class="g_nm">
+                                                        <lightning-icon icon-name='utility:edit' alternative-text={labels.LBL_edit_Holiday} size='xx-small' title='edit' class="slds-current-color pointer" onclick={handleOpenModalEditHoliday} data-key={eachHolidayCard.ids} data-title={eachHolidayCard.title} data-start={eachHolidayCard.fullDate} ></lightning-icon>
+                                                    </div>
+                                                    <div class="g_nm slds-p-left_x-small">
+                                                        <lightning-icon icon-name='utility:delete' alternative-text={labels.LBL_Delete_Holiday} size='xx-small' title='delete' class="slds-current-color pointer" onclick={removeHoliday} value={eachHolidayCard.ids} data-start={eachHolidayCard.fullDate} ></lightning-icon>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                        <div  class="cc " if:true={noHolidays}>
+                            <div class="c">
+                                <div class="con w100 sq g_nm " style={imageUrlNoHolidays}></div>
+                            </div>
+                            <div class="b c" style="padding-top:2px">{labels.LBL_No_Holidays}</div>
+                        </div>
+                        <div  class="cc " if:true={addHolidayIcon}>
+                            <div class="c">
+                                <div class="con w100 sq g_nm " style={imageUrlAddHolidays}></div>
+                            </div>
+                            <div class="b c" style="padding-top:2px">{labels.LBL_Add_Holiday_Text}</div>
+                        </div>
+                    </div>
+                </cl>
+            </tbl>
+            <div class="h">
+                <div if:true={showAllHolidays}  class="bgw  pr holidays-list" style="border-top-left-radius:0.25rem;border-top-right-radius:0.25rem ;height:200px;overflow-y: scroll;background:rgb(239,243,245);">
+                    <div class="fs12 b ph20 pv10" style="color:black;position: sticky;top:0;z-index:80;background:#EFF3F5">
+                        <lightning-formatted-date-time value={holidayText} if:false={upHolidays} ></lightning-formatted-date-time>
+                        <div if:true={upHolidays}>{holidayText}</div>
+                    </div>
+                    <div style="padding-left:12px;padding-right:12px;padding-bottom:7px">
+                        <div if:false={noHolidays}   for:each={holidaysCards} for:item="eachHolidayCard" data-key={eachHolidayCard.ids} key={eachHolidayCard.ids} style="background:white;margin-bottom:5px;box-shadow: rgba(0, 0, 0, 0.09) 0px 3px 12px;border-radius:0.25rem">
+                            <div style="padding:7px">
+                                <div  class="slds-grid slds-grid_vertical-align-center slds-wrap  " >
+                                    <div class="slds-col slds-size_10-of-12 slds-text-align_left " >
+                                        <div class="g_nm vt" >
+                                            <div  style="width:7px;height:7px;border-radius:50px;background:#0176D3;margin-top:7px"></div>
+                                        </div>
+                                        <div class="g_nm vt " style="padding-left:5px">
+                                            <div style="font-weight: 550;font-size:13px">
+                                            {eachHolidayCard.title}
+                                            </div>
+                                            <div  style="margin-top:3px;font-size:11px">
+                                                <div class="g_nm vm"><lightning-formatted-date-time value={eachHolidayCard.start}></lightning-formatted-date-time></div>
+                                                <div class="g_nm vm" style="height:1px;background:rgb(1,118,211);width:5px;margin-left:5px;margin-right:5px"></div>
+                                                <div class="g_nm vm"><lightning-formatted-date-time value={eachHolidayCard.end}></lightning-formatted-date-time></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_2-of-12  slds-text-align_right" style="color:rgb(1,118,211);">
+                                        <div if:false={isAdmin}>
+                                            <div class="g_nm">
+                                                <lightning-icon icon-name='utility:edit' alternative-text={labels.LBL_edit_Holiday} size='xx-small' title='edit' class="slds-current-color pointer" onclick={handleOpenModalEditHoliday} data-key={eachHolidayCard.ids} data-title={eachHolidayCard.title} data-start={eachHolidayCard.fullDate} ></lightning-icon>
+                                            </div>
+                                            <div class="g_nm slds-p-left_x-small">
+                                                <lightning-icon icon-name='utility:delete' alternative-text={labels.LBL_Delete_Holiday} size='xx-small' title='delete' class="slds-current-color pointer" onclick={removeHoliday} value={eachHolidayCard.ids} data-start={eachHolidayCard.fullDate} ></lightning-icon>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+                    <div  class="cc " if:true={noHolidays}>
+                        <div class="c">
+                            <div class="con w100 sq g_nm " style={imageUrlNoHolidays}></div>
+                        </div>
+                        <div class="b c" style="padding-top:2px">{labels.LBL_No_Holidays}</div>
+                    </div>
+                    <div  class="cc " if:true={addHolidayIcon}>
+                        <div class="c">
+                            <div class="con w100 sq g_nm " style={imageUrlAddHolidays}></div>
+                        </div>
+                        <div class="b c" style="padding-top:2px">{labels.LBL_Add_Holiday_Text}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div if:true={openAddModal} class="ov round2x" style="background-color: rgba(0, 0, 0, 0.3);z-index:90">
+            <div class="cc w50 round2x open-modal" style="background:white">
+                <div class="fs0 slds-p-around_x-small" style="border-bottom: 1px solid rgba(217, 217, 217, 0.4);box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;;border-top-left-radius:0.25rem;border-top-right-radius:0.25rem">
+                    <div class="g_nm w50  fs14 l vm">
+                        <div class="fs15 b">{labels.LBL_Add_Holiday}</div>
+                    </div>
+                    <div class="g_nm w50  fs14 r vm">
+                        <div class="g_nm pointer" style="width:25px;height:25px;border-radius:50%;background:rgb(239,243,245);position:relative;top:2px" onclick={handleCloseModal}>
+                            <div style="position: absolute;top: 42%;left: 50%;translate: -50% -50% 0px;">
+                                <lightning-icon icon-name='utility:close' alternative-text='close'  size='xx-small' class="slds-current-color " title='close' ></lightning-icon>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="slds-modal__content slds-p-around_small">
+                        <div class="pb10">
+                            <lightning-input label={labels.LBL_Title_Holiday} data-inputgroup="AllInputs" name="title" type="text" required onchange={handleGetInputsValues}></lightning-input>
+                        </div>
+                        <div class="fs0" style="margin:-10px">
+                            <div class="g_nm fs14 w50 vt m_m_w100 mt10 ph10"  >
+                                <div>
+                                    <lightning-input data-inputgroup="AllInputs" label={labels.LBL_Start_Date_Holiday} name="startDate" type="date" value={showDateInAddModal} required onchange={handleGetInputsValues}></lightning-input>
+                                </div>
+                            </div>
+                            <div class="g_nm fs14 w50 vt m_m_w100 mt10 ph10"  >
+                                <div>
+                                    <lightning-input data-inputgroup="AllInputs" label={labels.LBL_Number_Of_Days_Holiday} name="numberDays" type="text" value="1" required onchange={handleGetInputsValues}></lightning-input>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bgw  slds-text-align_right slds-p-top_medium slds-p-horizontal_small slds-p-bottom_small" style="border-bottom-left-radius:0.25rem;border-bottom-right-radius:0.25rem">
+                        <lightning-button label={labels.LBL_Cancel_Holiday} title={labels.LBL_Cancel_Holiday} icon-name="utility:close" onclick={handleCloseModal}></lightning-button>
+                        <lightning-button label={labels.LBL_Saved_Holiday} title={labels.LBL_Saved_Holiday} variant="brand" icon-name="utility:save" onclick={handleSaveHoliday} class="slds-p-left_x-small"></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div if:true={openEditModal} class="ov round2x" style="background-color: rgba(0, 0, 0, 0.3);z-index:90">
+            <div class="cc w50 round2x open-modal" style="background:white">
+                <div class="fs0 slds-p-around_x-small" style="border-bottom: 1px solid rgba(217, 217, 217, 0.4);box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;;border-top-left-radius:0.25rem;border-top-right-radius:0.25rem">
+                    <div class="g_nm   fs14 l vm" style="width:50%">
+                        <div class="fs15 b">{labels.LBL_Update_Holiday_Title}</div>
+                    </div>
+                    <div class="g_nm  fs14 r vm" style="width:50%">
+                        <div class="g_nm pointer" style="width:25px;height:25px;border-radius:50%;background:rgb(239,243,245);position:relative;top:2px" onclick={handleCloseModal}>
+                            <div style="position: absolute;top: 42%;left: 50%;translate: -50% -50% 0px;">
+                                <lightning-icon icon-name='utility:close' alternative-text='close'  size='xx-small' class="slds-current-color " title='close' ></lightning-icon>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="slds-modal__content slds-p-around_small">
+                        <div class="pb10">
+                            <lightning-input data-inputgroup="AllInputs" label={labels.LBL_Title_Holiday} name="title" type="text" required onchange={handleGetInputsValues}
+                            value={title}></lightning-input>
+                        </div>
+                        <div class="fs0" style="margin:-10px">
+                            <div class="g_nm fs14 w50 vt m_m_w100 pb10 ph10"  >
+                                <div>
+                                    <lightning-input data-inputgroup="AllInputs" label={labels.LBL_Start_Date_Holiday} name="startDate" type="date" required
+                                    value={startDate} onchange={handleGetInputsValues}></lightning-input>
+                                </div>
+                            </div>
+                            <div class="g_nm fs14 w50 vt m_m_w100 pb10 ph10"  >
+                                <div>
+                                    <lightning-input data-inputgroup="AllInputs" label={labels.LBL_Number_Of_Days_Holiday} name="numberDays" type="text" value="1" required onchange={handleGetInputsValues}></lightning-input>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bgw  slds-text-align_right slds-p-top_medium slds-p-horizontal_small slds-p-bottom_small" style="border-bottom-left-radius:0.25rem;border-bottom-right-radius:0.25rem">
+                        <lightning-button label={labels.LBL_Cancel_Holiday} title={labels.LBL_Cancel_Holiday} icon-name="utility:close" onclick={handleCloseModal}></lightning-button>
+                        <lightning-button label={labels.LBL_Update_Holiday} title={labels.LBL_Update_Holiday} variant="brand" icon-name="utility:save" onclick={handleUpdateHoliday} class="slds-p-left_x-small"></lightning-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

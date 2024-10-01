@@ -1,0 +1,154 @@
+.g_nm{
+    display: inline-block;
+  }
+  .brdr{
+    border:1px solid gray
+  }
+  .fs0{
+    font-size: 0px;
+  }
+  .fs14{
+    font-size: 14px;
+  }
+  .fs15{
+    font-size: 15px;
+  }
+  .fs16{
+    font-size: 16px;
+  }
+  .fs12{
+    font-size: 12px;
+  }
+  .fs20{
+    font-size: 20px;
+  }
+  
+  .w14{
+    width:14%;
+  }
+  .w20{
+    width: 20%;
+  }
+  
+  .w50{
+    width:50%
+  }
+  .w80{
+    width: 80%;
+  }
+  .bgw{
+    background: white;
+  }
+  .b{
+    font-weight: bold;
+  }
+  .round{
+    border-radius: .25rem!important
+  }
+  .vt{
+    vertical-align: top;
+  }
+  .pointer{
+    cursor: pointer
+  }
+  .cc{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50% 0px;
+  }
+  
+  .vm{
+    vertical-align: middle;
+  }
+  .pr{
+    position: relative;
+  }
+  .ov{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0
+  }
+  .ba {
+    bottom: auto
+}
+.ta {
+  top: auto
+}
+.la{
+  left: auto
+}
+.ra{
+  right: auto
+}
+
+  .round2x {
+    border-radius: .5rem !important;
+  }
+  *:focus {
+    outline: none;
+  }
+  
+  
+  
+  /*calendar css*/
+  .calendar-body {
+    padding: 7px;
+    /* padding-bottom: 20px; */
+  }
+  
+  .calendar-body .calendar-weekdays div {
+    cursor: default;
+    color:#9CA2AB
+  }
+  .calendar-dates{
+    text-align: center;
+    font-size: 1.07rem;
+    color: #414141;
+  }
+  
+  .calendar-body .calendar-dates div {
+    cursor: pointer;
+  }
+  
+  .calendar-dates div.inactive {
+    color: rgb(156,162,171,.6);
+  }
+  .calendar-dates div.inactiveCurrent {
+    color: rgb(156,162,171,.6);
+  }
+  
+  
+  .calendar-dates .holiday{
+    background: #0176D3
+  }
+
+  .calendar-dates .parent-circle{
+    width:42px;
+    height:42px;
+    border-radius:50px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border:1px solid transparent;
+  }
+  
+  
+  .calendar-dates .active{
+    border:1px solid #0176D3;
+    color:#0176D3;
+    font-weight: bold;
+  }
+  .calendar-dates .active-day{
+    background:rgb(217,235,248,.7);
+    border:1px solid #0176D3
+  }
+
+  .inactive .holiday{
+    opacity: .4;
+  
+  }
+  
+  /*calendar css*/
