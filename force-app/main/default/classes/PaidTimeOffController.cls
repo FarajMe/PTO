@@ -190,7 +190,7 @@ public static String AddNewHoliday(String newHoliday) {
         for (Paid_Time_Off__c holiday : HolidaysListName) {
             holidaysInfo.add(holiday.Name);
         }
-        List<Paid_Time_Off__c> HolidaysListInfo=new List<Paid_Time_Off__c>([SELECT Id, Name, Off_Day__C,IsAllDay__c,RecordTypeId  FROM Paid_Time_Off__c WHERE Name IN :holidaysInfo]);
+        List<Paid_Time_Off__c> HolidaysListInfo=new List<Paid_Time_Off__c>([SELECT Id, Name, Off_Day__C,IsAllDay__c,RecordTypeId  FROM Paid_Time_Off__c WHERE Name IN :holidaysInfo ORDER BY Name]);
         return JSON.serialize(HolidaysListInfo);
     }
     //gel all upcomming holidays//
