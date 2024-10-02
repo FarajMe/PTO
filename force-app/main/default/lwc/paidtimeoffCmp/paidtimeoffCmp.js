@@ -38,7 +38,7 @@ import LBL_Delete_Holiday from "@salesforce/label/c.LBL_Delete_Holiday";
 import LBL_Add_Holiday_Text from "@salesforce/label/c.LBL_Add_Holiday_Text";
 import LBL_Sun_Holiday from "@salesforce/label/c.LBL_Sun_Holiday";
 import LBL_Mon_Holiday from "@salesforce/label/c.LBL_Mon_Holiday";
-import LBL_Tu_Holiday from "@salesforce/label/c.LBL_Tu_Holiday";
+import LBL_Tue_Holiday from "@salesforce/label/c.LBL_Tue_Holiday";
 import LBL_Wed_Holiday from "@salesforce/label/c.LBL_Wed_Holiday";
 import LBL_Thu_Holiday from "@salesforce/label/c.LBL_Thu_Holiday";
 import LBL_Fri_Holiday from "@salesforce/label/c.LBL_Fri_Holiday";
@@ -86,7 +86,7 @@ export default class PaidTimeOffCmp extends LightningElement {
     LBL_Add_Holiday_Text,
     LBL_Sun_Holiday,
     LBL_Mon_Holiday,
-    LBL_Tu_Holiday,
+    LBL_Tue_Holiday,
     LBL_Wed_Holiday,
     LBL_Thu_Holiday,
     LBL_Fri_Holiday,
@@ -532,6 +532,47 @@ handleGetSpecificHoliday(holidayDate){
 }
 
 
+// handleSaveHoliday() {
+//     if (!this.handleCheckInputsIfEmpty()) return;
+
+//     // Notify if the quantity of days is less than 1.
+//     if (this.numberDays <= 0) {
+//         this.showNotification('Oops', 'The Number of Days must be equal or bigger than 1', 'error');
+//         this.openSpinner = false;
+//         return;
+//     }
+
+//     let AllDays = this.handleGetDaysBetweenTwoDates(new Date(this.startDate));
+//     let newHoliday = [];
+
+//     AllDays.forEach((day) => {
+//         newHoliday.push({
+//             'Name': this.title,
+//             'Off_Day__c': day,
+//             'IsAllDay__c': true,
+//             'RecordTypeId': this.selectedRecordTypeId // Set selected RecordTypeId
+//             // 'Reason__c': this.selectedPicklistValue // Set selected Reason__c (picklist value)
+//         });
+//     });
+//     console.log('wiss' + JSON.stringify(newHoliday));
+//     AddNewHoliday({ 'newHoliday': JSON.stringify(newHoliday) })
+//         .then(result => {
+//             this.openAddModal = false;
+//             if (this.upHolidays == true) {
+//                 this.handleUpcommingHolidays();
+//                 this.startDate = undefined;
+//             } else {
+//                 this.handleChangeMonth();
+//             }
+//             this.loadDataFromDB();
+//             this.showDateInAddModal = '';
+//         })
+//         .catch(error => {
+//             console.log('error ', error);
+//             this.openSpinner = false;
+//         });
+// }
+
 handleSaveHoliday() {
     if (!this.handleCheckInputsIfEmpty()) return;
 
@@ -546,6 +587,18 @@ handleSaveHoliday() {
     let newHoliday = [];
 
     AllDays.forEach((day) => {
+        let dayOfWeek = new Date(day).getDay(); // 0 = Sunday, 6 = Saturday
+
+        // Check if the type is 'weekend' and if the day is Saturday or Sunday.
+        if (this.selectedRecordTypeId === 'Weekend') { // Assuming 'Weekend' is the type identifier for weekend
+            if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                this.showNotification('Error', 'Weekend holidays must be on Saturday or Sunday.', 'error');
+                this.openSpinner = false;
+                return;
+            }
+        }
+
+        // If the check passes, proceed to add the holiday.
         newHoliday.push({
             'Name': this.title,
             'Off_Day__c': day,
@@ -554,70 +607,139 @@ handleSaveHoliday() {
             // 'Reason__c': this.selectedPicklistValue // Set selected Reason__c (picklist value)
         });
     });
-    console.log('wiss' + JSON.stringify(newHoliday));
+
+    // Proceed with saving the holiday records if the validation passes
+    if (newHoliday.length > 0) {
+        console.log('wiss' + JSON.stringify(newHoliday));
+        AddNewHoliday({ 'newHoliday': JSON.stringify(newHoliday) })
+            .then(result => {
+                this.openAddModal = false;
+                if (this.upHolidays == true) {
+                    this.handleUpcommingHolidays();
+                    this.startDate = undefined;
+                } else {
+                    this.handleChangeMonth();
+                }
+                this.loadDataFromDB();
+                this.showDateInAddModal = '';
+            })
+            .catch(error => {
+                console.log('error ', error);
+                this.openSpinner = false;
+            });
+    }
+}
+
+
+
+
+
+// updateOldHoliday(){
+
+//     if(!this.handleCheckInputsIfEmpty())return;
+//     //notify if the quantity of days is less than 1.//
+//     if (this.numberDays<=0) {
+//         this.showNotification('Oops', 'The Number of Days must be equal or bigger than 1', 'error');
+//         this.openSpinner = false;
+//         return;
+//     }
+//     let AllDays=this.handleGetDaysBetweenTwoDates(new Date(this.startDate));
+// //    console.log('wiss test' + AllDays.getDay());
+
+//     let newHoliday=[]
+    
+// AllDays.forEach((day) => {
+//     newHoliday.push({
+//         'Name': this.title,
+//         'Off_Day__c': day,
+//         'IsAllDay__c': true,
+//         'RecordTypeId':this.selectedRecordTypeId,
+//         // 'Reason__c':'Test'
+//     });
+    
+// });
+
+//     //   this.openSpinner = true;
+//     //create new holiday in apex//
+//     AddNewHoliday({ 'newHoliday': JSON.stringify(newHoliday) })
+//         .then(result => {
+//             this.openAddModal=false;
+//             if(this.upHolidays==true){
+//                 this.handleUpcommingHolidays();
+//                 this.startDate=undefined
+//             }else{
+//                 this.handleChangeMonth();
+//             }
+//             this.loadDataFromDB();
+//             this.showDateInAddModal='';
+//         })
+//         .catch(error => {
+//         console.log('error ',error)
+//             this.openSpinner = false;
+//         })  
+
+// }
+
+updateOldHoliday() {
+    // Check for empty inputs
+    if (!this.handleCheckInputsIfEmpty()) return;
+
+    // Notify if the quantity of days is less than 1
+    if (this.numberDays <= 0) {
+        this.showNotification('Oops', 'The Number of Days must be equal to or bigger than 1', 'error');
+        this.openSpinner = false;
+        return;
+    }
+
+    // Get the day of the week for the selected date
+    const selectedDay = new Date(this.startDate); // Assuming `this.startDate` is your selected date
+    const dayOfWeek = selectedDay.getDay(); // 0 = Sunday, 6 = Saturday
+
+    // Check if the selected holiday type is 'Weekend'
+    if (this.selectedRecordTypeId === 'Weekend') {
+        // Validate that the selected day is either Saturday (6) or Sunday (0)
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+            this.showNotification('Oops', 'Weekend holidays must be on Saturday or Sunday.', 'error');
+            this.openSpinner = false;
+            return;
+        }
+    }else{
+
+    // Prepare the new holiday object for submission
+    let newHoliday = [];
+    let allDays = this.handleGetDaysBetweenTwoDates(selectedDay); // Assuming this method returns an array of dates
+
+    allDays.forEach((day) => {
+        newHoliday.push({
+            'Name': this.title, // Keep the name as it is (not editable)
+            'Off_Day__c': day,
+            'IsAllDay__c': true,
+            'RecordTypeId': this.selectedRecordTypeId,
+            // 'Reason__c': 'Test' // Uncomment if you need to add a reason
+        });
+    });
+
+    // Create new holiday in Apex
+    this.removeHoliday();
     AddNewHoliday({ 'newHoliday': JSON.stringify(newHoliday) })
         .then(result => {
-            this.openAddModal = false;
-            if (this.upHolidays == true) {
+            this.openAddModal = false; // Close modal on success
+            this.loadDataFromDB(); // Reload the data
+            this.showDateInAddModal = ''; // Reset any displayed dates
+            // Handle upcoming holidays or month change if needed
+            if (this.upHolidays) {
                 this.handleUpcommingHolidays();
                 this.startDate = undefined;
             } else {
                 this.handleChangeMonth();
             }
-            this.loadDataFromDB();
-            this.showDateInAddModal = '';
         })
         .catch(error => {
-            console.log('error ', error);
-            this.openSpinner = false;
+            console.log('Error:', error);
+            this.showNotification('Error', 'There was an issue updating the holiday.', 'error'); // Notify user of the error
+            this.openSpinner = false; // Ensure spinner is turned off
         });
 }
-
-
-updateOldHoliday(){
-
-    if(!this.handleCheckInputsIfEmpty())return;
-    //notify if the quantity of days is less than 1.//
-    if (this.numberDays<=0) {
-        this.showNotification('Oops', 'The Number of Days must be equal or bigger than 1', 'error');
-        this.openSpinner = false;
-        return;
-    }
-    let AllDays=this.handleGetDaysBetweenTwoDates(new Date(this.startDate));
-//    console.log('wiss test' + AllDays.getDay());
-
-    let newHoliday=[]
-    
-AllDays.forEach((day) => {
-    newHoliday.push({
-        'Name': this.title,
-        'Off_Day__c': day,
-        'IsAllDay__c': true,
-        'RecordTypeId':this.selectedRecordTypeId,
-        // 'Reason__c':'Test'
-    });
-    
-});
-
-    //   this.openSpinner = true;
-    //create new holiday in apex//
-    AddNewHoliday({ 'newHoliday': JSON.stringify(newHoliday) })
-        .then(result => {
-            this.openAddModal=false;
-            if(this.upHolidays==true){
-                this.handleUpcommingHolidays();
-                this.startDate=undefined
-            }else{
-                this.handleChangeMonth();
-            }
-            this.loadDataFromDB();
-            this.showDateInAddModal='';
-        })
-        .catch(error => {
-        console.log('error ',error)
-            this.openSpinner = false;
-        })  
-
 }
 
 handleOpenModalAddHoliday(){
