@@ -54,7 +54,7 @@
                         <div class="calendar-weekdays fs0" style="font-weight: 400;text-align:center;margin-bottom:3px">
                             <div class="w14 g_nm fs14">{labels.LBL_Sun_Holiday}</div>
                             <div class="w14 g_nm fs14">{labels.LBL_Mon_Holiday}</div>
-                            <div class="w14 g_nm fs14">{labels.LBL_Tu_Holiday}</div>
+                            <div class="w14 g_nm fs14">{labels.LBL_Tue_Holiday}</div>
                             <div class="w14 g_nm fs14">{labels.LBL_Wed_Holiday}</div>
                             <div class="w14 g_nm fs14">{labels.LBL_Thu_Holiday}</div>
                             <div class="w14 g_nm fs14">{labels.LBL_Fri_Holiday}</div>
@@ -286,7 +286,7 @@
                             </lightning-combobox>
                         </div>
                         <lightning-button label={labels.LBL_Cancel_Holiday} title={labels.LBL_Cancel_Holiday} icon-name="utility:close" onclick={handleCloseModal}></lightning-button>
-                        <lightning-button label={labels.LBL_Update_Holiday} title={labels.LBL_Update_Holiday} variant="brand" icon-name="utility:save" onclick={handleUpdateHoliday} class="slds-p-left_x-small"></lightning-button>
+                        <lightning-button label={labels.LBL_Update_Holiday} title={labels.LBL_Update_Holiday} variant="brand" icon-name="utility:save" onclick={updateOldHoliday} class="slds-p-left_x-small"></lightning-button>
                     </div>
                 </div>
             </div>
