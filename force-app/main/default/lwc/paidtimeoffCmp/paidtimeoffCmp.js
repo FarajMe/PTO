@@ -573,6 +573,66 @@ handleGetSpecificHoliday(holidayDate){
 //         });
 // }
 
+
+
+// handleSaveHoliday() {
+//     if (!this.handleCheckInputsIfEmpty()) return;
+
+//     // Notify if the quantity of days is less than 1.
+//     if (this.numberDays <= 0) {
+//         this.showNotification('Oops', 'The Number of Days must be equal or bigger than 1', 'error');
+//         this.openSpinner = false;
+//         return;
+//     }
+
+
+//     let AllDays = this.handleGetDaysBetweenTwoDates(new Date(this.startDate));
+//     let newHoliday = [];
+
+//     AllDays.forEach((day) => {
+//         let dayOfWeek = new Date(day).getDay(); // 0 = Sunday, 6 = Saturday
+
+//         // Check if the type is 'weekend' and if the day is Saturday or Sunday.
+//         if (this.selectedRecordTypeId === 'Weekend') { // Assuming 'Weekend' is the type identifier for weekend
+//             if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+//                 this.showNotification('Error', 'Weekend holidays must be on Saturday or Sunday.', 'error');
+//                 this.openSpinner = false;
+//                 return;
+//             }
+//         }
+
+//         // If the check passes, proceed to add the holiday.
+//         newHoliday.push({
+//             'Name': this.title,
+//             'Off_Day__c': day,
+//             'IsAllDay__c': true,
+//             'RecordTypeId': this.selectedRecordTypeId // Set selected RecordTypeId
+//             // 'Reason__c': this.selectedPicklistValue // Set selected Reason__c (picklist value)
+//         });
+//     });
+
+//     // Proceed with saving the holiday records if the validation passes
+//     if (newHoliday.length > 0) {
+//         console.log('wiss' + JSON.stringify(newHoliday));
+//         AddNewHoliday({ 'newHoliday': JSON.stringify(newHoliday) })
+//             .then(result => {
+//                 this.openAddModal = false;
+//                 if (this.upHolidays == true) {
+//                     this.handleUpcommingHolidays();
+//                     this.startDate = undefined;
+//                 } else {
+//                     this.handleChangeMonth();
+//                 }
+//                 this.loadDataFromDB();
+//                 this.showDateInAddModal = '';
+//             })
+//             .catch(error => {
+//                 console.log('error ', error);
+//                 this.openSpinner = false;
+//             });
+//     }
+// }
+
 handleSaveHoliday() {
     if (!this.handleCheckInputsIfEmpty()) return;
 
@@ -583,51 +643,69 @@ handleSaveHoliday() {
         return;
     }
 
-    let AllDays = this.handleGetDaysBetweenTwoDates(new Date(this.startDate));
-    let newHoliday = [];
+    // Fetch existing holidays to check for name duplication
+    FetchHolidays()
+        .then(result => {
+            let res = JSON.parse(result);
+            let existingHolidayNames = res.map(holiday => holiday.Name);
 
-    AllDays.forEach((day) => {
-        let dayOfWeek = new Date(day).getDay(); // 0 = Sunday, 6 = Saturday
-
-        // Check if the type is 'weekend' and if the day is Saturday or Sunday.
-        if (this.selectedRecordTypeId === 'Weekend') { // Assuming 'Weekend' is the type identifier for weekend
-            if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-                this.showNotification('Error', 'Weekend holidays must be on Saturday or Sunday.', 'error');
+            // Check if the new holiday name already exists
+            if (existingHolidayNames.includes(this.title)) {
+                this.showNotification('Oops', 'A holiday with the same name already exists!', 'error');
                 this.openSpinner = false;
                 return;
             }
-        }
 
-        // If the check passes, proceed to add the holiday.
-        newHoliday.push({
-            'Name': this.title,
-            'Off_Day__c': day,
-            'IsAllDay__c': true,
-            'RecordTypeId': this.selectedRecordTypeId // Set selected RecordTypeId
-            // 'Reason__c': this.selectedPicklistValue // Set selected Reason__c (picklist value)
-        });
-    });
+            // Proceed if no duplicate holiday name exists
+            let AllDays = this.handleGetDaysBetweenTwoDates(new Date(this.startDate));
+            let newHoliday = [];
 
-    // Proceed with saving the holiday records if the validation passes
-    if (newHoliday.length > 0) {
-        console.log('wiss' + JSON.stringify(newHoliday));
-        AddNewHoliday({ 'newHoliday': JSON.stringify(newHoliday) })
-            .then(result => {
-                this.openAddModal = false;
-                if (this.upHolidays == true) {
-                    this.handleUpcommingHolidays();
-                    this.startDate = undefined;
-                } else {
-                    this.handleChangeMonth();
+            AllDays.forEach((day) => {
+                let dayOfWeek = new Date(day).getDay(); // 0 = Sunday, 6 = Saturday
+
+                // Check if the type is 'weekend' and if the day is Saturday or Sunday.
+                if (this.selectedRecordTypeId === 'Weekend') {
+                    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+                        this.showNotification('Error', 'Weekend holidays must be on Saturday or Sunday.', 'error');
+                        this.openSpinner = false;
+                        return;
+                    }
                 }
-                this.loadDataFromDB();
-                this.showDateInAddModal = '';
-            })
-            .catch(error => {
-                console.log('error ', error);
-                this.openSpinner = false;
+
+                // Add new holiday record if valid
+                newHoliday.push({
+                    'Name': this.title,
+                    'Off_Day__c': day,
+                    'IsAllDay__c': true,
+                    'RecordTypeId': this.selectedRecordTypeId
+                });
             });
-    }
+
+            // Proceed with saving the holiday records if the validation passes
+            if (newHoliday.length > 0) {
+                console.log('New Holiday: ' + JSON.stringify(newHoliday));
+                AddNewHoliday({ 'newHoliday': JSON.stringify(newHoliday) })
+                    .then(result => {
+                        this.openAddModal = false;
+                        if (this.upHolidays === true) {
+                            this.handleUpcommingHolidays();
+                            this.startDate = undefined;
+                        } else {
+                            this.handleChangeMonth();
+                        }
+                        this.loadDataFromDB();
+                        this.showDateInAddModal = '';
+                    })
+                    .catch(error => {
+                        console.log('Error: ', error);
+                        this.openSpinner = false;
+                    });
+            }
+        })
+        .catch(error => {
+            console.log('Error fetching holidays: ', error);
+            this.openSpinner = false;
+        });
 }
 
 
