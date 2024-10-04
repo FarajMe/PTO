@@ -170,7 +170,7 @@ wiredRecordTypeName({ error, data }) {
 //     }
 // }
 @track recordTypeOptions = [{ value: '012J70000008UMKIA2', label: 'Holiday' },
-                            { value: 'Weekend', label: 'Weekend' },
+                            { value: '012J70000008UMPIA2', label: 'Weekend' },
                             { value: '012J70000008UMUIA2', label: 'Vacation' },
                             { value: '012J70000008UMZIA2', label: 'Sick' },
                             { value: '012J70000008UMeIAM', label: 'Parental' }];
@@ -366,8 +366,6 @@ handleCalender(){
     this.currentDate=this.year+'-'+(parseInt(this.month+1)<10?'0'+parseInt(this.month+1):parseInt(this.month+1))+'-'+'01'
     console.log('this.currentDate ',this.currentDate)
 }
-
-
 
 //function to create a calendar with every pin
 //function with duplicate dots
@@ -662,17 +660,19 @@ handleSaveHoliday() {
 
             AllDays.forEach((day) => {
                 let dayOfWeek = new Date(day).getDay(); // 0 = Sunday, 6 = Saturday
+                console.log('Day of Week:', dayOfWeek);
 
-                // Check if the type is 'weekend' and if the day is Saturday or Sunday.
-                if (this.selectedRecordTypeId === 'Weekend') {
+                // Check if the selected RecordTypeId is for 'Weekend' holidays
+                if (this.selectedRecordTypeId === '012J70000008UMPIA2') {
+                    // If it's a weekend holiday, ensure it's either Saturday (6) or Sunday (0)
                     if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-                        this.showNotification('Error', 'Weekend holidays must be on Saturday or Sunday.', 'error');
+                        this.showNotification('Oops', 'Weekend holidays must be on Saturday or Sunday.', 'error');
                         this.openSpinner = false;
                         return;
                     }
                 }
 
-                // Add new holiday record if valid
+                // Add new holiday record if the check passes
                 newHoliday.push({
                     'Name': this.title,
                     'Off_Day__c': day,
@@ -697,9 +697,10 @@ handleSaveHoliday() {
                         this.showDateInAddModal = '';
                     })
                     .catch(error => {
-                        console.log('Error: ', error);
+                        console.error('Error adding holiday:', JSON.stringify(error));
                         this.openSpinner = false;
                     });
+                    
             }
         })
         .catch(error => {
@@ -707,6 +708,7 @@ handleSaveHoliday() {
             this.openSpinner = false;
         });
 }
+
 
 
 
@@ -774,7 +776,7 @@ updateOldHoliday() {
     const dayOfWeek = selectedDay.getDay(); // 0 = Sunday, 6 = Saturday
 
     // Check if the selected holiday type is 'Weekend'
-    if (this.selectedRecordTypeId === 'Weekend') {
+    if (this.selectedRecordTypeId === '012J70000008UMPIA2') {
         // Validate that the selected day is either Saturday (6) or Sunday (0)
         if (dayOfWeek !== 0 && dayOfWeek !== 6) {
             this.showNotification('Oops', 'Weekend holidays must be on Saturday or Sunday.', 'error');
