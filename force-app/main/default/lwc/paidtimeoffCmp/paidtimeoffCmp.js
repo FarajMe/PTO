@@ -169,6 +169,25 @@ wiredRecordTypeName({ error, data }) {
 //         console.error('Error retrieving object info:', error);
 //     }
 // }
+
+@wire(getObjectInfo, { objectApiName: PAID_TIME_OFF_OBJECT })
+objectInfo({ error, data }) {
+    if (data) {
+        this.recordTypeOptions = Object.keys(data.recordTypeInfos)
+            .filter(rtId => !data.recordTypeInfos[rtId].master) // Exclude the master record type
+            .map(rtId => ({
+                label: data.recordTypeInfos[rtId].name, // Get the label for the record type
+                value: rtId  // Store the record type ID
+            }));
+
+        // Optionally, store the ID of the 'Weekend' record type for later use
+        this.weekendRecordTypeId = this.recordTypeOptions.find(option => option.label === 'Weekend').value;
+    } else if (error) {
+        console.error('Error retrieving record types:', error);
+    }
+}
+
+
 @track recordTypeOptions = [{ value: '012J70000008UMKIA2', label: 'Holiday' },
                             { value: '012J70000008UMPIA2', label: 'Weekend' },
                             { value: '012J70000008UMUIA2', label: 'Vacation' },
@@ -663,7 +682,7 @@ handleSaveHoliday() {
                 console.log('Day of Week:', dayOfWeek);
 
                 // Check if the selected RecordTypeId is for 'Weekend' holidays
-                if (this.selectedRecordTypeId === '012J70000008UMPIA2') {
+                if (this.selectedRecordTypeId === this.weekendRecordTypeId) {
                     // If it's a weekend holiday, ensure it's either Saturday (6) or Sunday (0)
                     if (dayOfWeek !== 0 && dayOfWeek !== 6) {
                         this.showNotification('Oops', 'Weekend holidays must be on Saturday or Sunday.', 'error');
@@ -776,7 +795,7 @@ updateOldHoliday() {
     const dayOfWeek = selectedDay.getDay(); // 0 = Sunday, 6 = Saturday
 
     // Check if the selected holiday type is 'Weekend'
-    if (this.selectedRecordTypeId === '012J70000008UMPIA2') {
+    if (this.selectedRecordTypeId === this.weekendRecordTypeId) {
         // Validate that the selected day is either Saturday (6) or Sunday (0)
         if (dayOfWeek !== 0 && dayOfWeek !== 6) {
             this.showNotification('Oops', 'Weekend holidays must be on Saturday or Sunday.', 'error');
